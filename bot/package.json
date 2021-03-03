@@ -1,23 +1,24 @@
 {
-  "name": "TypescriptTemplate",
+  "name": "hypixel-forums-bot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "npm run build && cd dist && node index.js",
-    "dev": "nodemon",
+    "start": "nodemon",
     "build": "tsc"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/ioredis": "^4.22.0",
     "@types/node": "^14.0.22",
     "nodemon": "^2.0.4",
-    "ts-node": "^8.10.2",
     "typescript": "^3.9.6"
   },
   "dependencies": {
-    "dotenv": "^8.2.0"
+    "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0",
+    "ioredis": "^4.23.0"
   }
 }

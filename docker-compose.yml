@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:6.2.1
+    container_name: redis-db
+  bot:
+    build: ./bot
+    volumes:
+      - ./bot:/usr/proj
+    depends_on:
+      - redis
+    container_name: bot
+  listener:
+    build: ./listener
+    volumes:
+      - ./listener:/usr/proj
+    depends_on:
+      - redis
+      - bot
+    container_name: listener
