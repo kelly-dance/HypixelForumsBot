@@ -1,6 +1,7 @@
 import Redis from 'ioredis';
 import Parser from 'rss-parser';
 import { WebhookClient, MessageEmbed } from 'discord.js';
+import { feeds, Feed } from './feeds';
 
 const con = new Redis('redis://redis');
 
@@ -24,40 +25,6 @@ const newPost = async (feed: Feed, post: Item, id: string) => {
     )
   }
 }
-
-type Tag = {
-  id: string,
-  name: string,
-  url: string,
-}
-
-type Feed = {
-  id: string,
-  name: string,
-  url: string,
-  tags: Tag[],
-}
-
-const skyblock: Tag = {
-  id: 'skyblock',
-  name: 'Skyblock',
-  url: 'https://hypixel.net/categories/skyblock.194/',
-}
-
-const feeds: Feed[] = [
-  {
-    id: 'pit',
-    name: 'The Hypixel Pit',
-    url: "https://hypixel.net/forums/game-the-pit.151",
-    tags: [],
-  },
-  {
-    id: 'skyblockgeneral',
-    name: 'Skyblock General Discussion',
-    url: 'https://hypixel.net/forums/skyblock-general-discussion.157',
-    tags: [skyblock],
-  },
-];
 
 type Item = {
   title: string,
@@ -88,13 +55,13 @@ const categories = [
   while(true){
     console.log('Checking all feeds!')
     for(const feed of feeds){
-      const out = await parser.parseURL(`${feed.url}/index.rss`);
+      const out = await parser.parseURL(`${feed.url}index.rss`);
       for(const item of out.items){
-        const id =  item.link.substring(item.link.lastIndexOf('.') + 1, item.link.length-1);
+        const id =  item.link.substring(item.link.lastIndexOf('.') + 1, item.link.length - 1);
         const isMember = await con.sismember('posts', id)
         if(!isMember) await newPost(feed, item, id);
       }
+      await sleep(0.5);
     }
-    await sleep(20);
   }
 })();

@@ -31,12 +31,8 @@ export default {
         const tags = await con.smembers(`hook:${id}:subs`);
         const hook = guildHooks.get(id);
         if(!hook) console.error('There should always be a hook here?');
-        return {
-          id,
-          tags,
-          hook,
-        }
-      }))
+        return { id, tags, hook };
+      }));
 
       const content = hooks
         .map(hook => `<#${hook.hook?.channelID}>\n${hook.tags.join(', ')}`)
