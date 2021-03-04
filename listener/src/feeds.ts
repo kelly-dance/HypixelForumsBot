@@ -83,11 +83,23 @@ const code: Tag = {
   url: 'https://hypixel.net/forums/community-creations.191/',
 }
 
+const offtopic: Tag = {
+  id: 'offtopic',
+  name: 'Off Topic',
+  url: 'https://hypixel.net/forums/off-topic.2/',
+}
+
 export const feeds: Feed[] = [
   {
     id: 'news',
     name: 'News and Announcements',
     url: 'https://hypixel.net/forums/news-and-announcements.4/',
+    tags: [all],
+  },
+  {
+    id: 'maps',
+    name: 'Official Hypixel Maps',
+    url: 'https://hypixel.net/forums/official-hypixel-maps.17/',
     tags: [all],
   },
   {
@@ -115,10 +127,16 @@ export const feeds: Feed[] = [
     tags: [all, server],
   },
   {
-    id: 'offtopic',
+    id: 'offtopicmain',
     name: 'Off Topic',
     url: 'https://hypixel.net/forums/off-topic.2/',
-    tags: [all, community],
+    tags: [all, community, offtopic],
+  },
+  {
+    id: 'forumgames',
+    name: 'Forum Games',
+    url: 'https://hypixel.net/forums/forum-games.143/',
+    tags: [all, community, offtopic],
   },
   {
     id: 'introduceyourself',
@@ -188,13 +206,13 @@ export const feeds: Feed[] = [
   },
   {
     id: 'bedwars',
-    name: 'Bedwars',
+    name: 'Bed Wars',
     url: "https://hypixel.net/forums/bed-wars.138/",
     tags: [all, games],
   },
   {
     id: 'skywars',
-    name: 'Skywars',
+    name: 'SkyWars',
     url: "https://hypixel.net/forums/skywars.91/",
     tags: [all, games],
   },
@@ -213,7 +231,7 @@ export const feeds: Feed[] = [
   {
     id: 'buildbattle',
     name: 'Build Battle',
-    url: "https://hypixel.net/forums/housing.94/",
+    url: "https://hypixel.net/forums/build-battle.147/",
     tags: [all, games],
   },
   {
@@ -236,7 +254,7 @@ export const feeds: Feed[] = [
   },
   {
     id: 'towerwars',
-    name: 'Tower Wars',
+    name: 'TowerWars',
     url: "https://hypixel.net/forums/game-towerwars.156/",
     tags: [all, games, prototype],
   },
@@ -248,8 +266,8 @@ export const feeds: Feed[] = [
   },
   {
     id: 'pit',
-    name: 'The Hypixel Pit',
-    url: "https://hypixel.net/forums/game-the-pit.151/",
+    name: 'The Pit',
+    url: "https://hypixel.net/forums/the-pit.151/",
     tags: [all, games],
   },
   {
@@ -344,55 +362,55 @@ export const feeds: Feed[] = [
   },
   {
     id: 'skyblockpatchnotes',
-    name: 'Skyblock Patch Notes',
+    name: 'SkyBlock Patch Notes',
     url: 'https://hypixel.net/forums/skyblock-patch-notes.158/',
     tags: [all, games, skyblock],
   },
   {
     id: 'skyblockgeneral',
-    name: 'Skyblock General Discussion',
+    name: 'SkyBlock General Discussion',
     url: 'https://hypixel.net/forums/skyblock-general-discussion.157/',
     tags: [all, games, skyblock],
   },
   {
     id: 'skyblocksuggestions',
-    name: 'Skyblock Suggestions and Feedback',
+    name: 'SkyBlock Suggestions and Feedback',
     url: 'https://hypixel.net/forums/skyblock-suggestions-and-feedback.195/',
     tags: [all, games, skyblock],
   },
   {
     id: 'skyblockhelp',
-    name: 'Skyblock Community Help',
+    name: 'SkyBlock Community Help',
     url: 'https://hypixel.net/forums/skyblock-community-help.196/',
     tags: [all, games, skyblock],
   },
   {
     id: 'skyblockguilds',
-    name: 'Skyblock Guilds',
+    name: 'SkyBlock Guilds',
     url: 'https://hypixel.net/forums/skyblock-guilds.197/',
     tags: [all, games, skyblock],
   },
   {
     id: 'skyblockguides',
-    name: 'Skyblock Guides and Strategies',
+    name: 'SkyBlock Guides and Strategies',
     url: 'https://hypixel.net/forums/guides-and-strategies.162/',
     tags: [all, games, skyblock],
   },
   {
     id: 'skyblockcreative',
-    name: 'Skyblock Creative Corner',
+    name: 'SkyBlock Creative Corner',
     url: 'https://hypixel.net/forums/creative-corner.193/',
     tags: [all, games, skyblock],
   },
   {
     id: 'skyblockshowcase',
-    name: 'Skyblock Island Showcase',
+    name: 'SkyBlock Island Showcase',
     url: 'https://hypixel.net/forums/island-showcase.161/',
     tags: [all, games, skyblock],
   },
   {
     id: 'skyblockofftopic',
-    name: 'Skyblock Off Topic',
+    name: 'SkyBlock Off Topic',
     url: 'https://hypixel.net/forums/skyblock-off-topic.198/',
     tags: [all, games, skyblock],
   },
