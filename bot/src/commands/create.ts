@@ -1,5 +1,5 @@
 import { Command } from '../types';
-import { isAdmin, findHook } from '../utils';
+import { isAdmin, findHook, hasHookPerms } from '../utils';
 import con from '../con';
 import Discord from 'discord.js';
 
@@ -19,7 +19,10 @@ export default {
       if(!ismember) return msg.reply(`The tag "${tag}" is invalid. Use \`${process.env.PREFIX}tags\` to see all valid tags.`)
     }
     if(tags.length < 1) return msg.reply('You must profive atleast 1 tag. Ex `hf.create #channel all`');
-    
+
+    if(!hasHookPerms(msg.channel as Discord.TextChannel))
+      return msg.reply('The bot needs the Manage Webhooks permission in order to work!');
+
     let hook: Discord.Webhook | undefined = await findHook(msg.channel as Discord.TextChannel);
 
     if(!hook){

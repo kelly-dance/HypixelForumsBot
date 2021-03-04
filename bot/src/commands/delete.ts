@@ -1,5 +1,5 @@
 import { Command } from '../types';
-import { isAdmin, findHook } from '../utils';
+import { isAdmin, findHook, hasHookPerms } from '../utils';
 import con from '../con';
 import Discord from 'discord.js';
 
@@ -20,6 +20,9 @@ export default {
     }
 
     const deleteAll = tags.length === 0;
+
+    if(!hasHookPerms(msg.channel as Discord.TextChannel))
+      return msg.reply('The bot needs the Manage Webhooks permission in order to work!');
 
     let hook: Discord.Webhook | undefined = await findHook(msg.channel as Discord.TextChannel);
 

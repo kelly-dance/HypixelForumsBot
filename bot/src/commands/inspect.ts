@@ -1,5 +1,5 @@
 import { Command } from '../types';
-import { isAdmin, findHook } from '../utils';
+import { isAdmin, findHook, hasHookPerms } from '../utils';
 import con from '../con';
 import Discord from 'discord.js';
 
@@ -10,6 +10,10 @@ export default {
   hasPermission: isAdmin,
   async exec(msg, args){
     const mentionedChannel = msg.mentions.channels.first();
+
+    if(!hasHookPerms(msg.channel as Discord.TextChannel))
+        return msg.reply('The bot needs the Manage Webhooks permission in order to work!');
+
     if(mentionedChannel){
       let hook: Discord.Webhook | undefined = await findHook(msg.channel as Discord.TextChannel);
 
@@ -24,7 +28,6 @@ export default {
           .setDescription(tags.join(', '))
       )
     }else{
-
       const guildHooks = await msg.guild!.fetchWebhooks();
       const hookIds = await con.smembers(`guild:${msg.guild!.id}:hooks`);
       const hooks = await Promise.all(hookIds.map(async id => {

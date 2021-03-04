@@ -1,6 +1,7 @@
 import * as dotenv from 'dotenv';
 import { Client } from 'discord.js';
 import commands from './commands';
+import con from './con';
 
 dotenv.config({path:'../.env'});
 
@@ -27,6 +28,22 @@ client.on('message', msg => {
 
 	console.log(`Command: ${msg.author.username}#${msg.author.discriminator} -> ${msg.content}`)
 	target.exec(msg, args);
+});
+
+client.on('guildDelete', async guild => {
+	const hooks = await con.smembers(`guild:${guild.id}:hooks`);
+	const hooksPerTag = new Map<string, string[]>();
+	for(const hook of hooks){
+		await con.del(`hook:${hook}`);
+		const tags = await con.smembers(`hook:${hook}:subs`);
+		for(const tag of tags){
+			if(!hooksPerTag.has(tag)) hooksPerTag.set(tag, []);
+			hooksPerTag.get(tag)?.push(hook);
+		}
+	}
+	for(const [tag, hooks] of hooksPerTag.entries()){
+		await con.srem(`subs:${tag}`, ...hooks);
+	}
 });
 
 client.login(process.env.DISCORD_TOKEN);
