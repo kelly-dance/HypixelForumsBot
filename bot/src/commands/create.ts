@@ -5,7 +5,7 @@ import Discord from 'discord.js';
 
 export default {
   name: 'create',
-  aliases: ['add'],
+  aliases: ['add', 'new'],
   help: '',
   hasPermission: isAdmin,
   async exec(msg, args){
@@ -20,13 +20,13 @@ export default {
     }
     if(tags.length < 1) return msg.reply('You must profive atleast 1 tag. Ex `hf.create #channel all`');
 
-    if(!hasHookPerms(msg.channel as Discord.TextChannel))
+    if(!hasHookPerms(mentionedChannel))
       return msg.reply('The bot needs the Manage Webhooks permission in order to work!');
 
-    let hook: Discord.Webhook | undefined = await findHook(msg.channel as Discord.TextChannel);
+    let hook: Discord.Webhook | undefined = await findHook(mentionedChannel);
 
     if(!hook){
-      hook = await (msg.channel as Discord.TextChannel).createWebhook('Hypixel Forums Alerts');
+      hook = await mentionedChannel.createWebhook('Hypixel Forums Alerts');
       await Promise.all([
         con.hset(
           `hook:${hook.id}`,

@@ -5,7 +5,7 @@ import Discord from 'discord.js';
 
 export default {
   name: 'delete',
-  aliases: ['remove'],
+  aliases: ['remove', 'del', 'rem'],
   help: '',
   hasPermission: isAdmin,
   async exec(msg, args){
@@ -21,14 +21,14 @@ export default {
 
     const deleteAll = tags.length === 0;
 
-    if(!hasHookPerms(msg.channel as Discord.TextChannel))
+    if(!hasHookPerms(mentionedChannel))
       return msg.reply('The bot needs the Manage Webhooks permission in order to work!');
 
-    let hook: Discord.Webhook | undefined = await findHook(msg.channel as Discord.TextChannel);
+    let hook: Discord.Webhook | undefined = await findHook(mentionedChannel);
 
     if(!hook) return msg.reply('There is not even a hook in that channel!');
 
-    const allTags = await con.smembers(`hook:${hook.id}:hook`);
+    const allTags = await con.smembers(`hook:${hook.id}:subs`);
     if(deleteAll || allTags.length === tags.length){
       await Promise.all([
         con.del(`hook:${hook.id}:subs`),
