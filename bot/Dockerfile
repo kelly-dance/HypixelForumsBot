@@ -3,4 +3,5 @@ RUN chown node:node /root
 USER node
 WORKDIR /usr/proj
 COPY . .
+RUN npm i
 CMD ["npm", "start"]
