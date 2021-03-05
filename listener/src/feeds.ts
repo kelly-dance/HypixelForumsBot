@@ -243,7 +243,7 @@ export const feeds: Feed[] = [
   {
     id: 'capturethewool',
     name: 'Capture The Wool',
-    url: "https://hypixel.net/forums/arcade-games.80/",
+    url: "https://hypixel.net/forums/game-capture-the-wool.155/",
     tags: [all, games, arcadegames],
   },
   {
