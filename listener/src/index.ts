@@ -8,7 +8,7 @@ dotenv.config({path:'../.env'});
 
 const con = new Redis('redis://redis');
 
-const sleep = (secs: number) => new Promise(r => setTimeout(r, secs * 1e3));
+const sleep = (secs: number): Promise<undefined> => new Promise(r => setTimeout(() => r(undefined), secs * 1e3));
 
 const newPost = async (feed: Feed, post: Item, id: string) => {
   console.log(`New post ${id} in ${feed.id}. ${post.link}`)
@@ -77,23 +77,31 @@ const reportError = (msg: string) => {
   
   console.log('Beginning check loop!')
   while(true){
-    const out = await parser.parseURL(`https://hypixel.net/forums/-/index.rss`);
-    for(const item of out.items){
-      const category = item.categories[0].$.domain;
-      const feed = feeds.find(f => f.url === category);
-      if(!feed) {
-        reportError(`UNKNOWN FEED: "${category}" ${item.link}`);
-        continue;
+    const period = sleep(1);
+    tryblock:
+    try{
+      const out = await Promise.race([
+        parser.parseURL(`https://hypixel.net/forums/-/index.rss`),
+        sleep(5),
+      ])
+      if(!out) break tryblock;
+      for(const item of out.items){
+        const category = item.categories[0].$.domain;
+        const feed = feeds.find(f => f.url === category);
+        if(!feed) {
+          reportError(`UNKNOWN FEED: "${category}" ${item.link}`);
+          continue;
+        }
+        const match = item.link.match(/(\d+)\/?$/);
+        if(!match) {
+          reportError(`URL CANNOT BE PARSED: ${item.link}`);
+          continue
+        }
+        const id = match[1];
+        const isMember = await con.sismember('posts', id)
+        if(!isMember) await newPost(feed, item, id);
       }
-      const match = item.link.match(/(\d+)\/?$/);
-      if(!match) {
-        reportError(`URL CANNOT BE PARSED: ${item.link}`);
-        continue
-      }
-      const id = match[1];
-      const isMember = await con.sismember('posts', id)
-      if(!isMember) await newPost(feed, item, id);
-    }
-    await sleep(0.6);
+    }catch(e){ }
+    await period;
   }
 })();
