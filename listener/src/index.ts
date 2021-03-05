@@ -28,7 +28,7 @@ const newPost = async (feed: Feed, post: Item, id: string) => {
   console.log(`New post ${id} in ${feed.id}. ${post.link}`)
   await con.sadd('posts', id);
 
-  if(parseInt(post['slash:comments']) > 3) return; // probably necropost
+  if(parseInt(post['slash:comments']) >= 3) return; // probably necropost
 
   postEmitter.emit('post', {
     id,
@@ -99,6 +99,64 @@ const reportError = (()=>{
   }
 })();
 
+const checkFeed = async (url: string): Promise<boolean> => {
+  try{
+    const out = await Promise.race([
+      parser.parseURL(url),
+      sleep(5),
+    ])
+
+    if(!out) {
+      console.log('TIMED OUT');
+      return false;
+    }
+
+    const checks = await Promise.all(out.items.map(async item => {
+      const category = item.categories[0].$.domain;
+      const feed = feeds.find(f => f.url === category);
+      if(!feed) {
+        reportError(`UNKNOWN FEED: "${category}" ${item.link}`);
+        return false;
+      }
+      const match = item.link.match(/(\d+)\/?$/);
+      if(!match) {
+        reportError(`URL CANNOT BE PARSED: ${item.link}`);
+        return false;
+      }
+      const id = match[1];
+      const isMember = await con.sismember('posts', id)
+      if(!isMember) {
+        await newPost(feed, item, id);
+        return true;
+      }
+      return false;
+    }));
+    const anynew = checks.some(v => v);
+    return anynew;
+  }catch(e){
+    console.log('ERRORED')
+    console.error(e);
+  }
+  return false;
+}
+
+type FeedQueueItem = {
+  url: string,
+  lastTimes: number[],
+  prev: number,
+}
+
+/*
+I use this to keep a running average of time between posts on each rss feed
+I adjust the interval between checks based 1/10th the average interval
+The gap is capped at 15 minutes
+*/
+const feedQueue: FeedQueueItem[] = [
+  ...feeds.map(f => ({url: f.url, lastTimes: [], prev: 0})),
+  // this might help me discover when new forums are created by throwing errors lol
+  {url: 'https://hypixel.net/forums/-/', lastTimes: [], prev: 0},
+];
+
 (async()=>{
   await con.del('categories');
   await con.sadd('categories', ...categories.map(c => c.id));
@@ -113,31 +171,30 @@ const reportError = (()=>{
   
   console.log('Beginning check loop!')
   while(true){
-    const period = sleep(2);
-    tryblock:
-    try{
-      const out = await Promise.race([
-        parser.parseURL(`https://hypixel.net/forums/-/index.rss`),
-        sleep(5),
-      ])
-      if(!out) {
-        console.log('TIMED OUT')
-        break tryblock;
+    const period = sleep(0.5);
+
+    if(feedQueue.length){
+      const feed = feedQueue.shift()!;
+      const anynew = await checkFeed(`${feed.url}index.rss`);
+      let avg: number;
+      if(feed.prev === 0) feed.prev = Date.now();
+
+      if(anynew) {
+        // push the current gap to the history
+        feed.lastTimes.push(Date.now() - feed.prev);
+        feed.prev = Date.now();
+        while(feed.lastTimes.length > 50) feed.lastTimes.shift(); //remove old times. if *should* work the same as the while here
+        avg = feed.lastTimes.reduce((a, c) => a + c, 0) / feed.lastTimes.length;
+      }else{
+        // Use the current gap in the average.
+        avg = (Date.now() - feed.prev + feed.lastTimes.reduce((a, c) => a + c, 0)) / (feed.lastTimes.length + 1);
       }
-      out.items.forEach(async item => {
-        const category = item.categories[0].$.domain;
-        const feed = feeds.find(f => f.url === category);
-        if(!feed) return reportError(`UNKNOWN FEED: "${category}" ${item.link}`);
-        const match = item.link.match(/(\d+)\/?$/);
-        if(!match) return reportError(`URL CANNOT BE PARSED: ${item.link}`);
-        const id = match[1];
-        const isMember = await con.sismember('posts', id)
-        if(!isMember) await newPost(feed, item, id);
-      });
-    }catch(e){
-      console.log('ERRORED')
-      console.error(e);
-    }
+
+      const timeout = Math.min(avg / 10, 900e3); // No more than 15 minutes between checks
+      console.log(`Timeout: ${Math.round(timeout).toLocaleString()}ms for ${feed.url}`)
+      setTimeout(() => feedQueue.push(feed), timeout);
+    }; // else pass
+
     await period;
   }
 })();
@@ -149,7 +206,9 @@ const server = http.createServer((req, res) => {
 const wss = new WebSocket.Server({ server });
 
 wss.on('connection', (ws) => {
-  const listnerFn = (data: PostData) => ws.send(JSON.stringify(data));
+  ws.on('message', () => ws.send(JSON.stringify({ type: 'ping' }))); // used to keep the connection alive
+
+  const listnerFn = (data: PostData) => ws.send(JSON.stringify({ type:'post', data }));
   postEmitter.on('post', listnerFn);
   ws.on('close', () => postEmitter.removeListener('post', listnerFn));
 });
