@@ -65,21 +65,6 @@ const reportError = (msg: string) => {
 }
 
 (async()=>{
-  const stream = con.sscanStream('posts', {
-    match: 'net*',
-  });
-  
-  const toDel = new Set<string>();
-  stream.on('data', (data: string[]) => {
-    data.forEach(e => toDel.add(e));
-  });
-  stream.on('end', async () => {
-    console.log(toDel)
-    if(toDel.size){
-      await con.srem('posts', ...toDel);
-    }
-  });
-
   await con.del('categories');
   await con.sadd('categories', ...categories.map(c => c.id));
   for(const category of categories){
