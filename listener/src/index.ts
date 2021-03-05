@@ -99,7 +99,7 @@ const reportError = (()=>{
   }
 })();
 
-const checkFeed = async (url: string): Promise<boolean> => {
+const checkFeed = async (url: string): Promise<string[]> => {
   try{
     const out = await Promise.race([
       parser.parseURL(url),
@@ -108,7 +108,7 @@ const checkFeed = async (url: string): Promise<boolean> => {
 
     if(!out) {
       console.log('TIMED OUT');
-      return false;
+      return [];
     }
 
     const checks = await Promise.all(out.items.map(async item => {
@@ -127,17 +127,17 @@ const checkFeed = async (url: string): Promise<boolean> => {
       const isMember = await con.sismember('posts', id)
       if(!isMember) {
         await newPost(feed, item, id);
-        return true;
+        return category;
       }
       return false;
     }));
-    const anynew = checks.some(v => v);
+    const anynew = [...new Set(checks.filter(v => v))] as string[];
     return anynew;
   }catch(e){
     console.log('ERRORED')
     console.error(e);
   }
-  return false;
+  return [];
 }
 
 type FeedQueueItem = {
@@ -146,13 +146,17 @@ type FeedQueueItem = {
   prev: number,
 }
 
+
+// used to reference these items because they might not be always present in the queue
+const queueItems: FeedQueueItem[] = feeds.map(f => ({url: f.url, lastTimes: [], prev: 0}));
+
 /*
 I use this to keep a running average of time between posts on each rss feed
 I adjust the interval between checks based 1/10th the average interval
 The gap is capped at 15 minutes
 */
 const feedQueue: FeedQueueItem[] = [
-  ...feeds.map(f => ({url: f.url, lastTimes: [], prev: 0})),
+  ...queueItems,
   // this might help me discover when new forums are created by throwing errors lol
   {url: 'https://hypixel.net/forums/-/', lastTimes: [], prev: 0},
 ];
@@ -160,7 +164,7 @@ const feedQueue: FeedQueueItem[] = [
 (async()=>{
   await con.del('categories');
   await con.sadd('categories', ...categories.map(c => c.id));
-
+  
   for(const category of categories){
     await con.hset(
       `category:${category.id}`, 
@@ -171,19 +175,36 @@ const feedQueue: FeedQueueItem[] = [
   
   console.log('Beginning check loop!')
   while(true){
-    const period = sleep(0.5);
+    const period = sleep(0.75);
 
     if(feedQueue.length){
       const feed = feedQueue.shift()!;
-      const anynew = await checkFeed(`${feed.url}index.rss`);
+      const news = await checkFeed(`${feed.url}index.rss`);
       let avg: number;
       if(feed.prev === 0) feed.prev = Date.now();
 
-      if(anynew) {
-        // push the current gap to the history
-        feed.lastTimes.push(Date.now() - feed.prev);
-        feed.prev = Date.now();
-        while(feed.lastTimes.length > 50) feed.lastTimes.shift(); //remove old times. if *should* work the same as the while here
+      if(news.length) {
+        const toUpdate = [feed];
+
+        // purpose of this is so when this feed is hit it still effects the running avg
+        // for the feeds it stole new posts from
+        // hopefully this will make it less reliant on this feed
+        if(feed.url === 'https://hypixel.net/forums/-/') {
+          for(const newf of news){
+            const foundFeed = queueItems.find(f => f.url === newf);
+            if(foundFeed) toUpdate.push(foundFeed);
+            else reportError(`Queue item not found for ${newf}`);
+          }
+        }
+
+        // update all feeds effected
+        // usually this is only the `feed`, but if its that route above it will be more
+        for(const f of toUpdate){
+          // push the current gap to the history
+          f.lastTimes.push(Date.now() - f.prev);
+          f.prev = Date.now();
+          while(f.lastTimes.length > 50) f.lastTimes.shift(); //remove old times. if *should* work the same as the while here
+        }
         avg = feed.lastTimes.reduce((a, c) => a + c, 0) / feed.lastTimes.length;
       }else{
         // Use the current gap in the average.
