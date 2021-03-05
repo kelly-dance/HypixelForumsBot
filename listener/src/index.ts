@@ -3,6 +3,7 @@ import Parser from 'rss-parser';
 import { WebhookClient, MessageEmbed } from 'discord.js';
 import { feeds, Feed } from './feeds';
 import dotenv from 'dotenv';
+import http from 'http';
 import WebSocket from 'ws';
 import { EventEmitter } from 'events';
 
@@ -141,7 +142,11 @@ const reportError = (()=>{
   }
 })();
 
-const wss = new WebSocket.Server({ port: 5000 });
+const server = http.createServer((req, res) => {
+  res.writeHead(200);
+  res.end('Hypixel Forums Bot WebSocket Server!')
+});
+const wss = new WebSocket.Server({ server });
 
 wss.on('connection', (ws) => {
   const listnerFn = (data: PostData) => ws.send(JSON.stringify(data));
@@ -149,4 +154,4 @@ wss.on('connection', (ws) => {
   ws.on('close', () => postEmitter.removeListener('post', listnerFn));
 });
 
-wss.on('listening', () => console.log('Listening on port 5000!'));
+server.listen(5000);

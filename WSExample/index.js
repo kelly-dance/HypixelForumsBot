@@ -1,7 +1,6 @@
 const WebSocket = require('ws');
 
-// TODO: replace url with public url
-const ws = new WebSocket('ws://localhost:5000/');
+const ws = new WebSocket('wss://hf.mcpqndq.dev/');
 
 ws.on('open', () => {
   console.log('Connected')
