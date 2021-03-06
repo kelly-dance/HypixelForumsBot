@@ -84,12 +84,6 @@ const parser = new Parser<{}, Item>({
   }
 });
 
-// to be removed in next push
-const categories = [
-  ...feeds,
-  ...new Set(feeds.map(f => f.tags).flat(1)),
-];
-
 const reportError = (()=>{
 
   const reported = new Set<string>();
@@ -212,12 +206,6 @@ const addTagOrFeedToDB = async (o: Tag | Feed, from: Tag | undefined) => {
 }
 
 (async()=>{
-  await con.del('categories');
-
-  for(const category of categories){
-    await con.del(`category:${category.id}`);
-  }
-
   await con.del('tags', 'feeds');
 
   addTagOrFeedToDB(all, undefined);
