@@ -2,13 +2,13 @@
 
 ## Commands
 
-### create #channel ...tags
+### create \[#channel] [...tags]
 
 Create a webhook in a channel that will alert of posts from those tags. If the webhook already exists it will union the tags.
 
 Ex: `hf.create #alerts pit skyblock`
 
-### delete #channel [...tags]
+### delete \[#channel] [...tags]
 
 Delete alerts in a channel all together.
 
@@ -32,6 +32,6 @@ See what tags a channel is listening for.
 
 Ex: `hf.inspect #channel`
 
-### tags
+### tags [tag]
 
 List the valid tags.
