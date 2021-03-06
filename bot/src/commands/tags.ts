@@ -18,7 +18,7 @@ const getListeners = async (s: string, tags: string[]): Promise<number> => {
 export default {
   name: 'tags',
   aliases: ['tag', 'feeds', 'feed'],
-  basic: `List avaialable tags, or see info about one. \n\`${process.env.PREFIX}tags [tag]\``,
+  basic: `List available tags, or see info about one. \n\`${process.env.PREFIX}tags [tag]\``,
   advanced: `Use \`${process.env.PREFIX}tags\` to view all tags or use \`${process.env.PREFIX}tags <tag>\` to inspect a specifc tag.`,
   dms: true,
   hasPermission: or(isAdmin, isDM),
