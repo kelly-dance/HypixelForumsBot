@@ -44,6 +44,5 @@ export default {
       ]);
       msg.reply('Deleted those tags!');
     }
-    
   }
 } as Command;

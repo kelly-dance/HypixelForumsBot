@@ -176,6 +176,10 @@ const feedQueue: FeedQueueItem[] = [
 ];
 
 (async()=>{
+  for(const tag of categories){
+    await con.del(`subs:${tag}`)
+  }
+
   await con.del('categories');
   await con.sadd('categories', ...categories.map(c => c.id));
 
