@@ -26,7 +26,7 @@ export default {
         new Discord.MessageEmbed()
           .setColor('ffaa00')
           .setTitle(`#${mentionedChannel.name} Tags`)
-          .setDescription(tags.join(', '))
+          .setDescription(tags.map(t => `\`${t}\``).join(', '))
       )
     }else{
       try{
@@ -40,7 +40,7 @@ export default {
         }));
 
         const content = hooks
-          .map(hook => `<#${hook.hook?.channelID}>\n${hook.tags.join(', ')}`)
+          .map(hook => `<#${hook.hook?.channelID}>\n${hook.tags.map(t => `\`${t}\``).join(', ')}`)
           .join('\n\n');
 
         return msg.channel.send(

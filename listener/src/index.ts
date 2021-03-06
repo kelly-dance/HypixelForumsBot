@@ -1,7 +1,7 @@
 import Redis from 'ioredis';
 import Parser from 'rss-parser';
 import { WebhookClient, MessageEmbed, DiscordAPIError } from 'discord.js';
-import { feeds, Feed } from './feeds';
+import { feeds, ReversedFeed, all, isTag, Tag, Feed } from './feeds';
 import dotenv from 'dotenv';
 import http from 'http';
 import WebSocket from 'ws';
@@ -24,7 +24,7 @@ type PostData = {
 
 const postEmitter = new EventEmitter();
 
-const newPost = async (feed: Feed, post: Item, id: string) => {
+const newPost = async (feed: ReversedFeed, post: Item, id: string) => {
   console.log(`New post ${id} in ${feed.id}. ${post.link}`)
   await con.sadd('posts', id);
 
@@ -84,6 +84,7 @@ const parser = new Parser<{}, Item>({
   }
 });
 
+// to be removed in next push
 const categories = [
   ...feeds,
   ...new Set(feeds.map(f => f.tags).flat(1)),
@@ -175,17 +176,51 @@ const feedQueue: FeedQueueItem[] = [
   {url: 'https://hypixel.net/forums/-/', lastTimes: [], prev: 0},
 ];
 
+const addTagOrFeedToDB = async (o: Tag | Feed, from: Tag | undefined) => {
+  if(isTag(o)){
+    await con.sadd('tags', o.id);
+    await con.hset(
+      `tag:${o.id}`,
+      'name', o.name,
+      'url', o.url,
+    )
+    if(from){
+      await con.hset(
+        `tag:${o.id}`,
+        'parent', from.id,
+      )
+    }
+    for(const o2 of o.subtags){
+      await addTagOrFeedToDB(o2, o);
+      if(isTag(o2)){
+        await con.sadd(`tag:${o.id}:tags`, o2.id)
+      }else{
+        await con.sadd(`tag:${o.id}:feeds`, o2.id)
+      }
+    }
+  }else{
+    await con.sadd('feeds', o.id);
+    const parent = from?.id;
+    if(!parent) return reportError(`Parentless tag \`${o.id}\``);
+    await con.hset(
+      `feed:${o.id}`,
+      'name', o.name,
+      'url', o.url,
+      'parent', parent,
+    )
+  }
+}
+
 (async()=>{
   await con.del('categories');
-  await con.sadd('categories', ...categories.map(c => c.id));
 
   for(const category of categories){
-    await con.hset(
-      `category:${category.id}`, 
-      'name', category.name,
-      'url', category.url,
-    );
+    await con.del(`category:${category.id}`);
   }
+
+  await con.del('tags', 'feeds');
+
+  addTagOrFeedToDB(all, undefined);
   
   console.log('Beginning check loop!')
   while(true){

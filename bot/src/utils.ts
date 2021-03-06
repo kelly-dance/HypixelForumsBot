@@ -34,3 +34,17 @@ export const findHook = async (channel: Discord.TextChannel): Promise<Discord.We
   }
   return;
 }
+
+export const getTags = () => con.smembers('tags');
+export const getFeeds = () => con.smembers('feeds');
+export const getTagsOrFeeds = async () => {
+  const [tags, feeds] = await Promise.all([getTags(), getFeeds()]);
+  return [...tags, ...feeds];
+}
+export const isTagOrFeed = async (s: string): Promise<boolean> => {
+  const isMembers = await Promise.all([
+    con.sismember('tags', s),
+    con.sismember('feeds', s),
+  ]);
+  return isMembers.some(id);
+}

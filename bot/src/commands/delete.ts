@@ -1,13 +1,13 @@
 import { Command } from '../types';
-import { isAdmin, findHook, hasHookPerms } from '../utils';
+import { isAdmin, findHook, hasHookPerms, isTagOrFeed } from '../utils';
 import con from '../con';
 import Discord from 'discord.js';
 
 export default {
   name: 'delete',
   aliases: ['remove', 'del', 'rem'],
-  basic: `Delete a hook or remove tags from a hook. \n\`${process.env.PREFIX}delete <#channel> [tag 1] [tag 2] ...\``,
-  advanced: `Use  \`${process.env.PREFIX}delete <#channel>\` to remove all alerts from a channel, or use \`${process.env.PREFIX}delete <#channel> <tag 1> [tag 2] ...\` to remove specific tags from a channel.`,
+  basic: `Delete a hook or remove tags or feeds from a hook. \n\`${process.env.PREFIX}delete <#channel> [tag 1] [tag 2] ...\``,
+  advanced: `Use  \`${process.env.PREFIX}delete <#channel>\` to remove all alerts from a channel, or use \`${process.env.PREFIX}delete <#channel> <tag 1> [tag 2] ...\` to remove specific tags or feeds from a channel.`,
   hasPermission: isAdmin,
   async exec(msg, args){
     const mentionedChannel = msg.mentions.channels.first();
@@ -16,8 +16,8 @@ export default {
     const tags = args.slice(1)
       .map(s => s.toLowerCase());
     for(const tag of tags){
-      const ismember = await con.sismember('categories', tag);
-      if(!ismember) return msg.reply(`The tag "${tag}" is invalid. Use \`${process.env.PREFIX}tags\` to see all valid tags.`)
+      const ismember = await isTagOrFeed(tag);
+      if(!ismember) return msg.reply(`The tag "${tag}" is invalid. Use \`${process.env.PREFIX}tags\` to see all valid tags and feeds.`)
     }
 
     const deleteAll = tags.length === 0;
@@ -29,10 +29,13 @@ export default {
 
     if(!hook) return msg.reply('There is not even a hook in that channel!');
 
-    await hook.delete();
-
     const allTags = await con.smembers(`hook:${hook.id}:subs`);
-    if(deleteAll || allTags.length === tags.length){
+
+    const what = tags.filter(t => !allTags.includes(t));
+    if(what.length) return msg.reply(`You provided tag(s) or feed(s) that are not even active on that channel: ${what.map(t => `\`${t}\``).join(', ')}`)
+    
+    if(deleteAll || allTags.every(t => tags.includes(t))){
+      await hook.delete();
       await Promise.all([
         con.del(`hook:${hook.id}:subs`),
         con.del(`hook:${hook.id}`),
@@ -45,7 +48,7 @@ export default {
         con.srem(`hook:${hook.id}:subs`, ...tags),
         ...tags.map(tag => con.srem(`subs:${tag}`, hook!.id)),
       ]);
-      msg.reply('Deleted those tags!');
+      msg.reply(`Deleted ${tags.length} tags or feeds!`);
     }
   }
 } as Command;

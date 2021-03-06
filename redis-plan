@@ -1,12 +1,22 @@
 posts -> set[post ids]
 
-categories -> set[tags]
-category:{tag} -> hash {name, url, ???}
+# old schema
+# categories -> set[tags]
+# category:{tag} -> hash {name, url, isCategory, ???}
+# category:{tag}:subtags -> set[tags]
 
-subs:{tag} -> set[hook ids]
+tags -> set[tags]
+tag:{tag} -> hash {name, url, parent?, ???}
+tag:{tag}:tags -> set[tags]
+tag:{tag}:feeds -> set[feeds]
+
+feeds -> set[feeds]
+feed:{tag} -> hash {name, url, parent, ???}
+
+subs:{tag | feed} -> set[hook ids]
 
 hook:{id} -> hash {id, token, guild, ???}
-hook:{id}:subs -> set[tags]
+hook:{id}:subs -> set[tag | feed]
 
 guild:{id}:hooks -> set[hook ids]
 
