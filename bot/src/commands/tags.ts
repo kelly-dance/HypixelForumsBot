@@ -19,7 +19,7 @@ export default {
   name: 'tags',
   aliases: ['tag', 'feeds', 'feed'],
   basic: `List avaialable tags, or see info about one. \n\`${process.env.PREFIX}tags [tag]\``,
-  advanced: `Use \`${process.env.PREFIX}tags\` to view all tags or use \`${process.env.PREFIX}tag <tag>\` to inspect a specifc tag!`,
+  advanced: `Use \`${process.env.PREFIX}tags\` to view all tags or use \`${process.env.PREFIX}tags <tag>\` to inspect a specifc tag.`,
   dms: true,
   hasPermission: or(isAdmin, isDM),
   async exec(msg, args){
