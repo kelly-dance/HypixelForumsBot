@@ -1,13 +1,13 @@
 import { Command } from '../types';
-import { isAdmin, findHook, hasHookPerms } from '../utils';
+import { isAdmin, findHook, hasHookPerms, reportError } from '../utils';
 import con from '../con';
 import Discord from 'discord.js';
 
 export default {
   name: 'inspect',
   aliases: ['list', 'view'],
-  basic: `View active hooks in the server or see which tags are active in a channel. \n\`${process.env.PREFIX}inspect [#channel]\``,
-  advanced: `Use \`${process.env.PREFIX}inspect\` to view all hooks in the channel or use \`${process.env.PREFIX}inspect <#channel>\` to view active tags in that channel.`,
+  basic: `View active hooks in the server or see which tags or feeds are active in a channel. \n\`${process.env.PREFIX}inspect [#channel]\``,
+  advanced: `Use \`${process.env.PREFIX}inspect\` to view all hooks in the channel or use \`${process.env.PREFIX}inspect <#channel>\` to view active tags and feeds in that channel.`,
   hasPermission: isAdmin,
   async exec(msg){
     const mentionedChannel = msg.mentions.channels.first();
@@ -35,7 +35,7 @@ export default {
         const hooks = await Promise.all(hookIds.map(async id => {
           const tags = await con.smembers(`hook:${id}:subs`);
           const hook = guildHooks.get(id);
-          if(!hook) console.error('There should always be a hook here?');
+          if(!hook) reportError('There should always be a hook here?');
           return { id, tags, hook };
         }));
 

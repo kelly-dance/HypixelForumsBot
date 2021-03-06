@@ -48,3 +48,28 @@ export const isTagOrFeed = async (s: string): Promise<boolean> => {
   ]);
   return isMembers.some(id);
 }
+
+export const reportError = (()=>{
+
+  const reported = new Set<string>();
+
+  return (msg: string) => {
+    console.error(msg)
+
+    // to avert spamming the webhook
+    // bc of shards could still be issue
+    if(reported.has(msg)) return;
+    reported.add(msg);
+
+    if(process.env.ERROR_WEBHOOK){
+      const [id, token] = process.env.ERROR_WEBHOOK.split(',');
+      new Discord.WebhookClient(id, token).send(
+        new Discord.MessageEmbed()
+          .setColor('ff0000')
+          .setTitle('Error')
+          .setDescription(msg)
+          .setTimestamp()
+      ).then(() => console.log('reported'), e => console.error(e));
+    }
+  }
+})();
