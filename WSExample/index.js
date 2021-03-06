@@ -13,5 +13,3 @@ ws.on('open', () => {
 
   ws.on('close', () => clearInterval(interval));
 });
-
-

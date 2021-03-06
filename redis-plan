@@ -5,7 +5,7 @@ category:{tag} -> hash {name, url, ???}
 
 subs:{tag} -> set[hook ids]
 
-hook:{id} -> hash {id, token, ???}
+hook:{id} -> hash {id, token, guild, ???}
 hook:{id}:subs -> set[tags]
 
 guild:{id}:hooks -> set[hook ids]

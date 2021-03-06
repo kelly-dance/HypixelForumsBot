@@ -32,6 +32,7 @@ export default {
           `hook:${hook.id}`,
           'id', hook.id,
           'token', hook.token!,
+          'guild', msg.guild!.id,
         ),
         con.sadd(`guild:${msg.guild!.id}:hooks`, hook.id),
       ]);

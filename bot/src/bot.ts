@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import { Client } from 'discord.js';
+import { Client, Webhook, WebhookClient } from 'discord.js';
 import commands from './commands';
 import con from './con';
 
@@ -34,16 +34,19 @@ client.on('guildDelete', async guild => {
 	const hooks = await con.smembers(`guild:${guild.id}:hooks`);
 	const hooksPerTag = new Map<string, string[]>();
 	for(const hook of hooks){
+		// Clean up database
 		await con.del(`hook:${hook}`);
 		const tags = await con.smembers(`hook:${hook}:subs`);
 		for(const tag of tags){
 			if(!hooksPerTag.has(tag)) hooksPerTag.set(tag, []);
 			hooksPerTag.get(tag)?.push(hook);
 		}
+		await con.del(`hook:${hook}:subs`);
 	}
 	for(const [tag, hooks] of hooksPerTag.entries()){
 		await con.srem(`subs:${tag}`, ...hooks);
 	}
+	await con.del(`guild:${guild.id}:hooks`);
 });
 
 client.login(process.env.DISCORD_TOKEN);

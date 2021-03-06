@@ -1,6 +1,6 @@
 import Redis from 'ioredis';
 import Parser from 'rss-parser';
-import { WebhookClient, MessageEmbed } from 'discord.js';
+import { WebhookClient, MessageEmbed, DiscordAPIError } from 'discord.js';
 import { feeds, Feed } from './feeds';
 import dotenv from 'dotenv';
 import http from 'http';
@@ -39,19 +39,33 @@ const newPost = async (feed: Feed, post: Item, id: string) => {
     creator: post.creator,
   });
 
-  const hooks = await con.sunion('subs:all',`subs:${feed.id}`, ...feed.tags.map(tag => `subs:${tag.id}`))
+  const hooks = await con.sunion(`subs:${feed.id}`, ...feed.tags.map(tag => `subs:${tag.id}`));
   for(const hookid of hooks){
     const hook = await con.hgetall(`hook:${hookid}`)
-    if(!('id' in hook && 'token' in hook)) continue;
+    if(!('id' in hook && 'token' in hook)) {
+      reportError(`Invalid hook? id:\`${hookid}\` data:\`${JSON.stringify(hook)}\``);
+      continue;
+    }
     const wh = new WebhookClient(hook.id, hook.token);
-    await wh.send(
-      new MessageEmbed()
-        .setColor('ffaa00')
-        .setTitle(feed.name)
-        .setDescription(`[${post.title}](${post.link})`)
-        .setFooter(`by: ${post.creator}`)
-        .setTimestamp(new Date(post.pubDate))
-    )
+    try{
+      await wh.send(
+        new MessageEmbed()
+          .setColor('ffaa00')
+          .setTitle(feed.name)
+          .setDescription(`[${post.title}](${post.link})`)
+          .setFooter(`by: ${post.creator}`)
+          .setTimestamp(new Date(post.pubDate))
+      )
+    }catch(e){
+      if(e instanceof DiscordAPIError && e.message === 'Unknown Webhook'){
+        console.log(`Deleting invalid hook: ${hookid}`);
+        await con.del(`hook:${hookid}`);
+        const tags = await con.smembers(`hook:${hookid}:subs`);
+        for(const tag of tags) await con.srem(`subs:${tag}`, hookid);
+        await con.del(`hook:${hookid}:subs`);
+        await con.srem(`guild:${hook.guild}:hooks`, hookid);
+      }
+    }
   }
 }
 
@@ -164,7 +178,7 @@ const feedQueue: FeedQueueItem[] = [
 (async()=>{
   await con.del('categories');
   await con.sadd('categories', ...categories.map(c => c.id));
-  
+
   for(const category of categories){
     await con.hset(
       `category:${category.id}`, 
