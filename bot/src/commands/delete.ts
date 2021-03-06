@@ -11,7 +11,7 @@ export default {
   hasPermission: isAdmin,
   async exec(msg, args){
     const mentionedChannel = msg.mentions.channels.first();
-    if(!mentionedChannel) return msg.reply(`You must specific a channel. Ex \`${process.env.PREFIX}delete <#channel> [tags] ...\``);
+    if(!mentionedChannel) return msg.reply(`You must specify specific a channel. Ex \`${process.env.PREFIX}delete <#channel> [tags] ...\``);
     
     const tags = args.slice(1)
       .map(s => s.toLowerCase());

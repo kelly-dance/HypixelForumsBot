@@ -7,7 +7,7 @@ const embed = new MessageEmbed()
   .setTitle(`Hypixel Forums Alerts Bot Invites`)
   .setDescription([
     '**Bot Invite Link**',
-    'https://discord.com/api/oauth2/authorize?client_id=796133985298153502&permissions=536881152&scope=bot',
+    '[Invite](https://discord.com/api/oauth2/authorize?client_id=796133985298153502&permissions=536881152&scope=bot)',
     '',
     '**Hub Server**',
     'https://discord.gg/SMVy3ZfGAe',
