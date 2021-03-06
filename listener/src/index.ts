@@ -28,7 +28,7 @@ const newPost = async (feed: Feed, post: Item, id: string) => {
   console.log(`New post ${id} in ${feed.id}. ${post.link}`)
   await con.sadd('posts', id);
 
-  if(parseInt(post['slash:comments']) >= 3) return; // probably necropost
+  if(parseInt(post['slash:comments']) >= 5) return; // probably necropost
 
   postEmitter.emit('post', {
     id,
@@ -54,7 +54,7 @@ const newPost = async (feed: Feed, post: Item, id: string) => {
           .setTitle(feed.name)
           .setDescription(`[${post.title}](${post.link})`)
           .setFooter(`by: ${post.creator}`)
-          .setTimestamp(new Date(post.pubDate))
+          .setTimestamp(new Date(post.pubDate)),
       )
     }catch(e){
       if(e instanceof DiscordAPIError && e.message === 'Unknown Webhook'){

@@ -3,6 +3,8 @@ import con from './con';
 
 export const isAdmin = (msg: Discord.Message) => !!msg.member?.permissions.has('ADMINISTRATOR');
 
+export const isBotAdmin = (msg: Discord.Message) => (process.env.ADMINS||'').split(',').includes(msg.author.id);
+
 export const hasHookPerms = (channel: Discord.TextChannel) => channel.permissionsFor(channel.client.user!)?.has('MANAGE_WEBHOOKS');
 
 export const findHook = async (channel: Discord.TextChannel): Promise<Webhook | undefined> => {

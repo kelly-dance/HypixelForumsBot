@@ -9,3 +9,6 @@ hook:{id} -> hash {id, token, guild, ???}
 hook:{id}:subs -> set[tags]
 
 guild:{id}:hooks -> set[hook ids]
+
+use: 
+sudo docker-compose run redis redis-cli -h redis

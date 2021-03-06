@@ -26,7 +26,9 @@ export default {
     let hook: Discord.Webhook | undefined = await findHook(mentionedChannel);
 
     if(!hook){
-      hook = await mentionedChannel.createWebhook('Hypixel Forums Alerts');
+      hook = await mentionedChannel.createWebhook('Hypixel Forums Alerts', {
+        avatar: 'https://img.mcpqndq.dev/zeDW',
+      });
       await Promise.all([
         con.hset(
           `hook:${hook.id}`,
