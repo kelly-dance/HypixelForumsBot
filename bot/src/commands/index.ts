@@ -5,6 +5,8 @@ import deleteCmd from './delete';
 import inspect from './inspect';
 import tags from './tags';
 import evalCmd from './eval';
+import invite from './invite';
+import help from './help';
 
 export default [
   create,
@@ -12,4 +14,6 @@ export default [
   inspect,
   tags,
   evalCmd,
-] as Command[]
+  invite,
+  help,
+] as Command[];

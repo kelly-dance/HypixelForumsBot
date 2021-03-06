@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import { Client, Webhook, WebhookClient } from 'discord.js';
+import { Client } from 'discord.js';
 import commands from './commands';
 import con from './con';
 
@@ -9,10 +9,12 @@ if(!process.env.DISCORD_TOKEN) throw new Error('Missing PREFIX');
 
 const client = new Client();
 
-client.on('message', msg => {
-	if (!msg.content.startsWith(process.env.PREFIX) || msg.author.bot || msg.channel.type !== 'text') return;
+client.on('message', async msg => {
+	if(msg.author.bot) return;
+	if(msg.channel.type === 'text' && !msg.content.startsWith(process.env.PREFIX)) return;
 
-	const args = msg.content.slice(process.env.PREFIX.length).trim().toLowerCase().split(/\s+/g);
+	const content = (msg.content.startsWith(process.env.PREFIX) ? msg.content.substring(process.env.PREFIX.length) : msg.content).trim().toLowerCase()
+	const args = content.split(/\s+/g);
 	const command = args.shift()
 
 	if(!command) return;
@@ -21,7 +23,11 @@ client.on('message', msg => {
 
 	if(!target) return;
 
-	if(!target.hasPermission(msg)) {
+	if(msg.channel.type === 'dm' && !target.dms) return msg.reply('This command is disabled in DMs!');
+
+	const hasPerm = await target.hasPermission(msg);
+
+	if(!hasPerm) {
 		console.log(`Permmision denied: ${msg.author.username}#${msg.author.discriminator} -> ${msg.content}`)
 		return msg.reply('You do not have permission to use this command!');
 	}
@@ -47,6 +53,13 @@ client.on('guildDelete', async guild => {
 		await con.srem(`subs:${tag}`, ...hooks);
 	}
 	await con.del(`guild:${guild.id}:hooks`);
+});
+
+client.on('ready', () => {
+	client.user?.setActivity({
+		name: 'The Hypixel Forums',
+		type: 'WATCHING',
+	})
 });
 
 client.login(process.env.DISCORD_TOKEN);

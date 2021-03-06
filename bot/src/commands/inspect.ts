@@ -6,9 +6,10 @@ import Discord from 'discord.js';
 export default {
   name: 'inspect',
   aliases: ['list', 'view'],
-  help: '',
+  basic: `View active hooks in the server or see which tags are active in a channel. \n\`${process.env.PREFIX}inspect [#channel]\``,
+  advanced: `Use \`${process.env.PREFIX}inspect\` to view all hooks in the channel or use \`${process.env.PREFIX}inspect <#channel>\` to view active tags in that channel.`,
   hasPermission: isAdmin,
-  async exec(msg, args){
+  async exec(msg){
     const mentionedChannel = msg.mentions.channels.first();
 
     if(mentionedChannel){

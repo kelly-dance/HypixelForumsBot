@@ -4,7 +4,10 @@ import { isBotAdmin } from '../utils';
 export default {
   name: 'eval',
   aliases: [],
-  help: '',
+  basic: 'This text isn\'t even displayed anywhere.',
+  advanced: `You already know how to use this.`,
+  hidden: true,
+  dms: true,
   hasPermission: isBotAdmin,
   async exec(msg){
     if(msg.content.includes("```js\n")) {

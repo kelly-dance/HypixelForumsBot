@@ -1,13 +1,32 @@
-import Discord, { Webhook } from 'discord.js';
+import Discord from 'discord.js';
+import { Permission } from './types';
 import con from './con';
 
-export const isAdmin = (msg: Discord.Message) => !!msg.member?.permissions.has('ADMINISTRATOR');
+export const id = <T>(v: T): T => v;
 
-export const isBotAdmin = (msg: Discord.Message) => (process.env.ADMINS||'').split(',').includes(msg.author.id);
+export const or = (...perms: Permission[]): Permission => async msg => {
+  const results = await Promise.all(perms.map(p => p(msg)));
+  return results.some(id);
+};
 
-export const hasHookPerms = (channel: Discord.TextChannel) => channel.permissionsFor(channel.client.user!)?.has('MANAGE_WEBHOOKS');
+export const and = (...perms: Permission[]): Permission => async msg => {
+  const results = await Promise.all(perms.map(p => p(msg)));
+  return results.every(id);
+};
 
-export const findHook = async (channel: Discord.TextChannel): Promise<Webhook | undefined> => {
+export const anyone: Permission = async () => true;
+
+export const isDM: Permission = async msg => msg.channel.type === 'dm';
+
+export const isGuildChannel: Permission = async msg => msg.channel.type === 'text';
+
+export const isAdmin: Permission = async msg => !!msg.member?.permissions.has('ADMINISTRATOR');
+
+export const isBotAdmin: Permission = async msg => (process.env.ADMINS||'').split(',').includes(msg.author.id);
+
+export const hasHookPerms = (channel: Discord.TextChannel) => !!channel.permissionsFor(channel.client.user!)?.has('MANAGE_WEBHOOKS');
+
+export const findHook = async (channel: Discord.TextChannel): Promise<Discord.Webhook | undefined> => {
   const hooks = await channel?.fetchWebhooks()!;
   for(const hook of hooks.values()){
     const ismember = await con.sismember(`guild:${channel.guild.id}:hooks`, hook.id);

@@ -6,14 +6,14 @@ import Discord from 'discord.js';
 export default {
   name: 'create',
   aliases: ['add', 'new'],
-  help: '',
+  basic: `Add forums alerts to a channel. \n\`${process.env.PREFIX}create <#channel> <tag 1> [tag 2] ...\``,
+  advanced: `Use \`${process.env.PREFIX}create <#channel> <tag 1> [tag 2] ...\` to set tags to alert for in a channel.`,
   hasPermission: isAdmin,
   async exec(msg, args){
     const mentionedChannel = msg.mentions.channels.first();
     if(!mentionedChannel) return msg.reply('You must specific a channel. Ex `hf.create #channel tags`');
 
-    const tags = args.slice(1)
-      .map(s => s.toLowerCase());
+    const tags = args.slice(1).map(s => s.toLowerCase());
     for(const tag of tags){
       const ismember = await con.sismember('categories', tag);
       if(!ismember) return msg.reply(`The tag "${tag}" is invalid. Use \`${process.env.PREFIX}tags\` to see all valid tags.`)
@@ -44,5 +44,5 @@ export default {
       ...tags.map(tag => con.sadd(`subs:${tag}`, hook!.id)),
     ]);
     msg.reply(`Added ${tags.length} tags to ${mentionedChannel}.`);
-  }
+  },
 } as Command;

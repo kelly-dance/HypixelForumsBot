@@ -6,7 +6,8 @@ import Discord from 'discord.js';
 export default {
   name: 'delete',
   aliases: ['remove', 'del', 'rem'],
-  help: '',
+  basic: `Delete a hook or remove tags from a hook. \n\`${process.env.PREFIX}delete <#channel> [tag 1] [tag 2] ...\``,
+  advanced: `Use  \`${process.env.PREFIX}delete <#channel>\` to remove all alerts from a channel, or use \`${process.env.PREFIX}delete <#channel> <tag 1> [tag 2] ...\` to remove specific tags from a channel.`,
   hasPermission: isAdmin,
   async exec(msg, args){
     const mentionedChannel = msg.mentions.channels.first();
@@ -27,6 +28,8 @@ export default {
     let hook: Discord.Webhook | undefined = await findHook(mentionedChannel);
 
     if(!hook) return msg.reply('There is not even a hook in that channel!');
+
+    await hook.delete();
 
     const allTags = await con.smembers(`hook:${hook.id}:subs`);
     if(deleteAll || allTags.length === tags.length){
