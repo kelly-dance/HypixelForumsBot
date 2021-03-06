@@ -4,7 +4,6 @@ import con from '../con';
 import Discord, { MessageEmbed } from 'discord.js';
 
 const getListeners = async (s: string, tags: string[]): Promise<number> => {
-  
   const isTag = tags.includes(s);
   const [cur, parent] = await Promise.all([
     con.scard(`subs:${s}`),

@@ -293,7 +293,7 @@ const offtopic: Tag = {
 }
 
 const builds: Tag = {
-  id: 'creations',
+  id: 'builds',
   name: 'Community Creations',
   url: 'https://hypixel.net/forums/community-creations.191/',
   subtags: [
@@ -321,7 +321,7 @@ const builds: Tag = {
 }
 
 const code: Tag = {
-  id: 'creations',
+  id: 'code',
   name: 'Community Creations',
   url: 'https://hypixel.net/forums/community-creations.191/',
   subtags: [
