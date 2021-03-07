@@ -64,7 +64,7 @@ export default {
       tags = tags.filter(t => !alreadyIncluded.has(t));
       if(unnessecary.length){
         if(tags.length === 0){
-          return msg.reply('All of the tags you are trying to add are already active in that channel');
+          return msg.reply('All of the tags you are trying to add are already active in that channel.');
         }else{
           await msg.reply(`Warning! ${unnessecary.length} of the tags or feeds you are trying to add are already active in that channel. Skipping them.`)
         }

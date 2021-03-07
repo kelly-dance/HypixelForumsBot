@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import { Client } from 'discord.js';
+import { Client, DiscordAPIError } from 'discord.js';
 import commands from './commands';
 import con from './con';
 
@@ -32,8 +32,16 @@ client.on('message', async msg => {
 		return msg.reply('You do not have permission to use this command!');
 	}
 
-	console.log(`Command: ${msg.author.username}#${msg.author.discriminator} -> ${msg.content}`)
-	target.exec(msg, args);
+	console.log(`Command: ${msg.author.username}#${msg.author.discriminator} -> ${msg.content}`);
+	try{
+		await target.exec(msg, args);
+	}catch(e){
+		if(e instanceof DiscordAPIError && e.message === 'Missing Permissions') {
+			try{
+				msg.author.send('There was some form of Permission Error while executing your command. Double check and try again.');
+			}catch(e){}
+		}
+	}
 });
 
 client.on('guildDelete', async guild => {
