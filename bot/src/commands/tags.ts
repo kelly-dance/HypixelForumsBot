@@ -1,6 +1,6 @@
 import { Command } from '../types';
 import { isAdmin, or, isDM } from '../utils';
-import con from '../con';
+import con from '../dbCon';
 import Discord, { MessageEmbed } from 'discord.js';
 
 const getListeners = async (s: string, tags: string[]): Promise<number> => {
