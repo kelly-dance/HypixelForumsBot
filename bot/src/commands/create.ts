@@ -60,13 +60,13 @@ export default {
       for(const tag of existingTags){
         await findSubTags(tag, alreadyIncluded); //impure
       }
-      const unnessecary = tags.filter(t => alreadyIncluded.has(t));
+      const unnecessary = tags.filter(t => alreadyIncluded.has(t));
       tags = tags.filter(t => !alreadyIncluded.has(t));
-      if(unnessecary.length){
+      if(unnecessary.length){
         if(tags.length === 0){
           return msg.reply('All of the tags you are trying to add are already active in that channel.');
         }else{
-          await msg.reply(`Warning! ${unnessecary.length} of the tags or feeds you are trying to add are already active in that channel. Skipping them.`)
+          await msg.reply(`Warning! ${unnecessary.length} of the tags or feeds you are trying to add are already active in that channel. Skipping them.`)
         }
       }
       // nolonger needed
@@ -74,11 +74,11 @@ export default {
       for(const tag of tags){
         await findSubTags(tag, willInclude); //impure
       }
-      const nowUnnessecary = existingTags.filter(t => willInclude.has(t));
-      if(nowUnnessecary.length){
-        await msg.reply(`Warning, your new tags make some existing tags no longer nessecary: ${nowUnnessecary.map(t => `\`${t}\``).join(', ')}. They will be automatically removed.`);
+      const nowUnnecessary = existingTags.filter(t => willInclude.has(t));
+      if(nowUnnecessary.length){
+        await msg.reply(`Warning, your new tags make some existing tags no longer necessary: ${nowUnnecessary.map(t => `\`${t}\``).join(', ')}. They will be automatically removed.`);
         await Promise.all(
-          nowUnnessecary.map(tag => [
+          nowUnnecessary.map(tag => [
             con.srem(`hook:${hook!.id}:subs`, tag),
             con.srem(`subs:${tag}`, hook!.id)
           ]).flat(1)
