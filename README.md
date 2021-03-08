@@ -4,8 +4,8 @@
 
 Two `.env` files must be created. `bot/.env` and `listener/.env`.
 
- In `bot/.env` you need 2 and optionally a third value. `PREFIX`, `DISOCRD_TOKEN`, and optionally `ERROR_WEBBOOK`.
- First two are self explainatory, the third is the webhook id and token seperated by a comma which will be used to alert of errors.
+ In `bot/.env` you need 3 and optionally a fourth value. `PREFIX`, `DISOCRD_TOKEN`, `ADMINS`, and optionally `ERROR_WEBBOOK`.
+ First two are self explainatory, the third should be user ids separated by commas. The fourth is the webhook id and token seperated by a comma which will be used to alert of errors.
  
  In `listener/.env` you will just have that same `ERRPR_WEBHOOK` value.
  
