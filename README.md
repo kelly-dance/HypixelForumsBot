@@ -1,5 +1,18 @@
 # Hypixel Forums Bot
 
+## Setup
+
+Two `.env` files must be created. `bot/.env` and `listener/.env`.
+
+ In `bot/.env` you need 2 and optionally a third value. `PREFIX`, `DISOCRD_TOKEN`, and optionally `ERROR_WEBBOOK`.
+ First two are self explainatory, the third is the webhook id and token seperated by a comma which will be used to alert of errors.
+ 
+ In `listener/.env` you will just have that same `ERRPR_WEBHOOK` value.
+ 
+ To run use `docker compose up`. Used `-d` to run it detatched mode (in the background).
+ 
+ To help with debugging in the database use `docker-compose run redis redis-cli -h redis` to open a redis cli instance connected to the database.
+
 ## Commands
 
 ### create \[#channel] [...tags]
@@ -35,3 +48,7 @@ Ex: `hf.inspect #channel`
 ### tags [tag]
 
 List the valid tags.
+
+### help [command]
+
+Get info about commands or a specific command.
