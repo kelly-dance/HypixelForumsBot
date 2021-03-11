@@ -1,8 +1,8 @@
 import * as dotenv from 'dotenv';
 import { Client, DiscordAPIError } from 'discord.js';
-import commands from './commands';
-import con from './con';
 import { reportError } from './utils';
+import commands from './commands';
+import con from './dbCon';
 
 dotenv.config({path:'../.env'});
 

@@ -1,6 +1,6 @@
 import { Command } from '../types';
 import { isAdmin, findHook, hasHookPerms, isTagOrFeed } from '../utils';
-import con from '../con';
+import con from '../dbCon';
 import Discord from 'discord.js';
 
 export default {

@@ -1,6 +1,6 @@
 import Discord from 'discord.js';
 import { Permission } from './types';
-import con from './con';
+import con from './dbCon';
 
 export const id = <T>(v: T): T => v;
 
