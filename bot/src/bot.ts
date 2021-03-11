@@ -37,7 +37,7 @@ client.on('message', async msg => {
   try{
     await target.exec(msg, args);
   }catch(e){
-    reportError(`Guild: ${msg.guild?.name} (${msg.guild?.id})\nUser: ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})\`\`\`\n${JSON.stringify(e, null, 4)}\`\`\``)
+    reportError(`Guild: ${msg.guild?.name} (${msg.guild?.id})\nUser: ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})\`\`\`json\n${JSON.stringify(e, null, 4)}\`\`\``)
     if(e instanceof DiscordAPIError && e.message === 'Missing Permissions') {
       try{
         msg.author.send('There was some form of Permission Error while executing your command. Double check and try again.');
