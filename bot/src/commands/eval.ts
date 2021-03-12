@@ -1,5 +1,4 @@
 import { Command } from '../types';
-import { isBotAdmin } from '../utils';
 
 export default {
   name: 'eval',
@@ -8,7 +7,7 @@ export default {
   advanced: `You already know how to use this.`,
   hidden: true,
   dms: true,
-  hasPermission: isBotAdmin,
+  hasPermission: async () => false,
   async exec(msg){
     if(msg.content.includes("```js\n")) {
       const code = msg.content.substring(msg.content.indexOf("```js\n")+6,msg.content.lastIndexOf("```"));
