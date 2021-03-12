@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import { Client, DiscordAPIError } from 'discord.js';
-import { reportError, isBotAdmin, isAdmin } from './utils';
+import { reportError, isBotAdmin } from './utils';
 import commands from './commands';
 import con from './dbCon';
 
@@ -26,7 +26,7 @@ client.on('message', async msg => {
 
   if(msg.channel.type === 'dm' && !target.dms) return msg.reply('This command is disabled in DMs!');
 
-  const hasPerm = await target.hasPermission(msg) || await isAdmin(msg);
+  const hasPerm = await target.hasPermission(msg) || await isBotAdmin(msg);
 
   if(!hasPerm) {
     console.log(`Permmision denied: ${msg.author.username}#${msg.author.discriminator} -> ${msg.content}`)
