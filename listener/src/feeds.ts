@@ -196,7 +196,7 @@ const games: Tag = {
     {
       id: 'buildbattle',
       name: 'Build Battle',
-      url: "https://hypixel.net/forums/build-battle.147/",
+      url: "https://hypixel.net/build-battle/",
     },
     arcadegames,
     prototype,
@@ -215,7 +215,7 @@ const games: Tag = {
     {
       id: 'megawalls',
       name: 'Mega Walls',
-      url: "https://hypixel.net/forums/mega-walls.77/",
+      url: "https://hypixel.net/mega-walls/",
     },
     {
       id: 'blitz',
@@ -241,6 +241,11 @@ const games: Tag = {
       id: 'duels',
       name: 'Duels',
       url: 'https://hypixel.net/forums/duels.152/',
+    },
+    {
+      id: 'smp',
+      name: 'SMP',
+      url: 'https://hypixel.net/smp/',
     },
     skyblock
   ]
