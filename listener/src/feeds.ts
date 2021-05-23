@@ -404,7 +404,7 @@ export const all: Tag = {
     {
       id: 'maps',
       name: 'Official Hypixel Maps',
-      url: 'https://hypixel.net/forums/official-hypixel-maps.17/',
+      url: 'https://hypixel.net/maps/',
     },
     games,
   ],
