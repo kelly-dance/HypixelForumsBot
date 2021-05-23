@@ -4,10 +4,10 @@
 
 Two `.env` files must be created. `bot/.env` and `listener/.env`.
 
- In `bot/.env` you need 3 and optionally a fourth value. `PREFIX`, `DISOCRD_TOKEN`, `ADMINS`, and optionally `ERROR_WEBBOOK`.
+ In `bot/.env` you need 3 and optionally a fourth value. `PREFIX`, `DISCORD_TOKEN`, `ADMINS`, and optionally `ERROR_WEBHOOK`.
  First two are self explainatory, the third should be user ids separated by commas. The fourth is the webhook id and token seperated by a comma which will be used to alert of errors.
  
- In `listener/.env` you will just have that same `ERRPR_WEBHOOK` value.
+ In `listener/.env` you will just have that same `ERROR_WEBHOOK` value.
  
  To run use `docker compose up`. Used `-d` to run it detatched mode (in the background).
  
