@@ -138,7 +138,7 @@ const classic: Tag = {
     {
       id: 'walls',
       name: 'The Walls',
-      url: 'https://hypixel.net/forums/the-walls.71/',
+      url: 'https://hypixel.net/the-walls/',
     },
     {
       id: 'quakecraft',
