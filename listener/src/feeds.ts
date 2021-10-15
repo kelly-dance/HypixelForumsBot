@@ -68,6 +68,11 @@ const skyblock: Tag = {
       name: 'SkyBlock Off Topic',
       url: 'https://hypixel.net/forums/skyblock-off-topic.198/',
     },
+    {
+      id: 'skyblockalpha',
+      name: 'SkyBlock Alpha',
+      url: 'https://hypixel.net/skyblock-alpha/',
+    },
   ]
 }
 
