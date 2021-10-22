@@ -108,6 +108,11 @@ const prototype: Tag = {
       id: 'towerwars',
       name: 'TowerWars',
       url: "https://hypixel.net/forums/game-towerwars.156/",
+    },
+    {
+      id: 'pixelparty',
+      name: 'Pixel Party',
+      url: "https://hypixel.net/forums/pixel-party/",
     }
   ]
 }
