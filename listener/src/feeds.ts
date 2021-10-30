@@ -113,7 +113,7 @@ const prototype: Tag = {
       id: 'pixelparty',
       name: 'Pixel Party',
       url: "https://hypixel.net/forums/pixel-party/",
-    }
+    },
   ]
 }
 
