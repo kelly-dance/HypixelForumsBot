@@ -153,7 +153,7 @@ const classic: Tag = {
     {
       id: 'walls',
       name: 'The Walls',
-      url: 'https://hypixel.net/forums/the-walls.71/',
+      url: 'https://hypixel.net/the-walls/',
     },
     {
       id: 'quakecraft',
@@ -419,7 +419,7 @@ export const all: Tag = {
     {
       id: 'maps',
       name: 'Official Hypixel Maps',
-      url: 'https://hypixel.net/forums/official-hypixel-maps.17/',
+      url: 'https://hypixel.net/maps/',
     },
     games,
   ],
