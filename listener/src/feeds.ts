@@ -114,6 +114,11 @@ const prototype: Tag = {
       name: 'Pixel Party',
       url: "https://hypixel.net/forums/pixel-party/",
     },
+    {
+      id: 'invaders',
+      name: 'Invaders',
+      url: "https://hypixel.net/forums/game-invaders.220/",
+    },
   ]
 }
 
