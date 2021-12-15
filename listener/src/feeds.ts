@@ -114,6 +114,11 @@ const prototype: Tag = {
       name: 'Pixel Party',
       url: "https://hypixel.net/forums/pixel-party/",
     },
+    {
+      id: 'invaders',
+      name: 'Invaders',
+      url: "https://hypixel.net/forums/game-invaders.220/",
+    },
   ]
 }
 
@@ -148,7 +153,7 @@ const classic: Tag = {
     {
       id: 'walls',
       name: 'The Walls',
-      url: 'https://hypixel.net/the-walls/',
+      url: 'https://hypixel.net/forums/the-walls.71/',
     },
     {
       id: 'quakecraft',
@@ -414,7 +419,7 @@ export const all: Tag = {
     {
       id: 'maps',
       name: 'Official Hypixel Maps',
-      url: 'https://hypixel.net/maps/',
+      url: 'https://hypixel.net/forums/official-hypixel-maps.17/',
     },
     games,
   ],
